@@ -9,4 +9,20 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Grosla::Application.config.secret_key_base = 'a60ec238793c7608c35a4f47cfd6294a756bd7ad8a389e4e12552fade09359fbf52413544414a392ae521eabf3cb48a685101959ba1fa2f86b7af986dfaaefc2'
+
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Grosla::Application.config.secret_key_base = secure_token
